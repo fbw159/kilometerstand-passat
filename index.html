@@ -662,6 +662,11 @@ $("zugang-form").addEventListener("submit", ev => {
 });
 $("zugang-zeigen").addEventListener("click", () => { zeigeZugang(true, "Hier kannst du den Link oder Code neu eintragen."); $("zugang").scrollIntoView({ behavior: "smooth" }); });
 $("neu-laden").addEventListener("click", () => { if (VORSCHAU) meldung("In der Vorschau gibt es nichts zu laden."); else laden(); });
+// Link mit Code geöffnet, während die Seite schon offen ist (nur der #-Teil ändert sich, kein Neuladen)
+window.addEventListener("hashchange", () => {
+  const c = codeAus(location.hash.slice(1));
+  if (c && c !== code) { code = c; merken(S_CODE, c); laden(); }
+});
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
