@@ -784,9 +784,16 @@ $("w-liste").addEventListener("submit", ev => {
     if (p.km && km == null) { meldung("Bitte den km-Stand eintragen.", "fehler"); el.km.focus(); return; }
     const warnung = km != null ? kmPruefen(km, datum) : null;
     if (warnung && !confirm(warnung + "\n\nTrotzdem speichern?")) return;
-    const aendern = !!wAendern && p.erledigt.some(x => x.id === wAendern);
+    let aendern = !!wAendern && p.erledigt.some(x => x.id === wAendern);
     const body = { aktion: "erledigt", punkt: p.id, datum, km, notiz };
     if (aendern) body.id = wAendern;
+    // Neuer Eintrag älter als der letzte? Dann ändert sich an der Anzeige nichts – meist war ein Ändern gemeint.
+    const letzter = p.erledigt[p.erledigt.length - 1];
+    if (!aendern && letzter && letzter.datum > datum) {
+      const alt = datumW(p, letzter.datum), neu = datumW(p, datum);
+      if (confirm("Es gibt schon einen neueren Eintrag vom " + alt + ", und der zählt für die Anzeige.\n\nSoll stattdessen der Eintrag vom " + alt + " auf " + neu + " geändert werden?")) { body.id = letzter.id; aendern = true; }
+      else if (!confirm("Dann als zusätzlichen, älteren Eintrag vom " + neu + " speichern?")) return;
+    }
     wSpeichern(body, (aendern ? "Geändert: " : "Eingetragen: ") + p.name + " am " + datumW(p, datum) + (km != null ? " bei " + zahl(km) + " km" : "") + ".", knopf, () => { wAendern = null; });
   } else if (f.dataset.w === "punkt") {
     const name = el.name.value.trim(), km = zahlAus(el.km.value), monate = zahlAus(el.monate.value), monatsende = el.monatsende.checked;
