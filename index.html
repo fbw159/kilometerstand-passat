@@ -21,6 +21,7 @@
   --blau:#1C5DAE; --blau-flaeche:#E3EBF6; --auf-blau:#FFFFFF;
   --rot:#BC2530; --rot-flaeche:#FBE7E8; --rot-linie:#E9B3B7;
   --gruen:#2A7547; --gruen-flaeche:#E3F1E8; --gruen-linie:#B2D7C0;
+  --gelb:#94560A; --gelb-flaeche:#FBF0DC;
   --zelle:#262C32; --ziffer:#F3F4F5;
   color-scheme:light;
 }
@@ -30,6 +31,7 @@
     --blau:#6B9DDF; --blau-flaeche:#1D2A3A; --auf-blau:#0D1826;
     --rot:#EF6870; --rot-flaeche:#361C20; --rot-linie:#6A2C33;
     --gruen:#68C08B; --gruen-flaeche:#17301F; --gruen-linie:#2B573A;
+    --gelb:#E2A54E; --gelb-flaeche:#33281A;
     --zelle:#2E363E; --ziffer:#F1F3F5;
     color-scheme:dark;
   }
@@ -115,6 +117,53 @@ p{margin:0}
 .warnung{color:var(--rot);font-weight:600}
 .gut{color:var(--gruen);font-weight:600}
 
+/* Wartung */
+.wartung .kopfzeile{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.w-status{font-size:14px;font-weight:600;color:var(--leise)}
+.w-status.ok{color:var(--gruen)}
+.w-status.bald{color:var(--gelb)}
+.w-status.faellig{color:var(--rot)}
+.w-punkt+.w-punkt{border-top:1px solid var(--gitter)}
+.w-zeile{display:grid;grid-template-columns:1fr auto 12px;gap:1px 8px;align-items:baseline;width:100%;padding:10px 0 12px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.w-name{font-weight:600;min-width:0}
+.w-zeit{font-weight:600;text-align:right;white-space:nowrap}
+.w-info{grid-column:1/-1;font-size:13.5px;color:var(--leise);min-width:0}
+.w-pfeil{justify-self:center;color:var(--leise);font-size:20px;line-height:14px;transition:transform .2s}
+.offen .w-pfeil{transform:rotate(90deg)}
+.w-balken{grid-column:1/-1;display:block;height:6px;border-radius:3px;background:rgba(128,128,128,.2);overflow:hidden;margin-top:7px}
+.w-balken span{display:block;height:100%;border-radius:3px;background:var(--blau)}
+.bald .w-zeit{color:var(--gelb)}
+.bald .w-balken span{background:var(--gelb)}
+.faellig .w-zeit{color:var(--rot)}
+.faellig .w-balken span{background:var(--rot)}
+.leer .w-zeit{color:var(--leise)}
+.w-details{padding:0 0 14px;font-size:15px}
+.w-details>p{margin:0 0 4px}
+.w-titel{font-weight:600;font-size:15px;margin:14px 0 6px}
+.w-form+.w-titel{margin-top:20px}
+.w-felder{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.w-felder .breit{grid-column:1/-1}
+.w-form label{display:flex;flex-direction:column;gap:3px;font-size:13.5px;color:var(--leise);min-width:0}
+.w-form input:not([type=checkbox]){width:100%;min-height:42px;font-size:16px;color:var(--text);background:var(--grund);border:1px solid var(--linie);border-radius:8px;padding:8px 10px}
+.w-form .haken{flex-direction:row;align-items:center;gap:9px;font-size:14.5px;color:var(--text);padding:4px 0}
+.w-form .haken input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--blau)}
+.w-knoepfe{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.haupt.knapp{min-height:42px;font-size:15px;padding:0 16px}
+.zweit{min-height:42px;border:1px solid var(--linie);border-radius:9px;background:none;color:var(--text);font-size:15px;padding:0 14px;cursor:pointer}
+.zweit.rot{color:var(--rot);border-color:var(--rot-linie)}
+.w-verlauf{list-style:none;margin:0;padding:0}
+.w-verlauf li{display:grid;grid-template-columns:auto 1fr auto auto;gap:0 12px;align-items:center;padding:4px 0;border-bottom:1px solid var(--gitter)}
+.w-verlauf li:last-child{border-bottom:0}
+.w-verlauf small{display:block;font-size:13px;color:var(--leise);line-height:1.3}
+.w-mini{border:0;background:none;color:var(--leise);font-size:19px;line-height:1;width:34px;height:34px;border-radius:6px;cursor:pointer}
+.w-einst{margin-top:14px}
+.w-einst summary{color:var(--blau);font-size:14.5px;cursor:pointer;padding:4px 0}
+.w-plus{border:0;background:none;color:var(--blau);font-size:15px;font-weight:600;padding:12px 0 2px;cursor:pointer}
+.w-neu{border-top:1px solid var(--gitter);padding-top:2px}
+.w-fuss{margin-top:8px}
+.w-hinweis{display:inline-block;margin-top:8px;border:0;border-radius:8px;padding:6px 10px;font-size:14px;font-weight:600;cursor:pointer;background:var(--gelb-flaeche);color:var(--gelb)}
+.w-hinweis.faellig{background:var(--rot-flaeche);color:var(--rot)}
+
 /* Zeitraum */
 .zeitraum h2{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .auswahl{position:relative;display:inline-block}
@@ -153,6 +202,7 @@ footer button{border:0;background:none;padding:0;color:var(--blau);font-size:13p
     <h1>Kilometerstand</h1>
     <div class="zaehler still" id="zaehler" role="img" aria-label="Noch kein Kilometerstand"></div>
     <p class="abgelesen" id="abgelesen">Wird geladen …</p>
+    <button type="button" class="w-hinweis" id="w-hinweis" hidden></button>
   </header>
 
   <section class="feld zugang" id="zugang" hidden>
@@ -192,6 +242,12 @@ footer button{border:0;background:none;padding:0;color:var(--blau);font-size:13p
   <section class="feld vers" id="vers">
     <div class="kopfzeile"><h2>Versicherung</h2><span id="vers-km"></span></div>
     <div id="vers-inhalt"><p class="klein">Noch keine Ablesungen.</p></div>
+  </section>
+
+  <section class="feld wartung" id="wartung">
+    <div class="kopfzeile"><h2>Wartung</h2><span class="w-status" id="w-status"></span></div>
+    <div id="w-liste"></div>
+    <p class="klein w-fuss" id="w-fuss"></p>
   </section>
 
   <section class="feld zeitraum">
@@ -266,15 +322,24 @@ function codeAus(text) {
 code = codeAus(location.hash.slice(1));
 if (code) merken(S_CODE, code); else code = lesen(S_CODE);
 
-let daten = { versicherung: {}, eintraege: [] }, punkte = [], vers = null;
+let daten = { versicherung: {}, eintraege: [], wartung: [] }, punkte = [], vers = null;
 let beschaeftigt = false, geladenUm = 0;
 
-function sortieren(l) { return l.sort((a, b) => a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : a.km - b.km); }
+function sortieren(l) { return l.sort((a, b) => a.datum < b.datum ? -1 : a.datum > b.datum ? 1 : (a.km ?? -1) - (b.km ?? -1)); }
 function normalisieren(d) {
   const l = (d && Array.isArray(d.eintraege) ? d.eintraege : [])
     .filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.datum) && Number.isFinite(Number(e.km)))
     .map(e => ({ id: String(e.id || e.datum + "-" + e.km), datum: e.datum, km: Number(e.km), notiz: e.notiz ? String(e.notiz) : "" }));
-  return { versicherung: (d && d.versicherung) || {}, eintraege: sortieren(l) };
+  const w = (d && Array.isArray(d.wartung) ? d.wartung : [])
+    .filter(p => p && p.id && p.name)
+    .map(p => ({
+      id: String(p.id), name: String(p.name),
+      km: Number(p.km) > 0 ? Number(p.km) : null, monate: Number(p.monate) > 0 ? Number(p.monate) : null, monatsende: p.monatsende === true,
+      erledigt: sortieren((Array.isArray(p.erledigt) ? p.erledigt : [])
+        .filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.datum))
+        .map(e => ({ id: String(e.id || e.datum), datum: e.datum, km: e.km != null && e.km !== "" && Number.isFinite(Number(e.km)) ? Number(e.km) : null, notiz: e.notiz ? String(e.notiz) : "" }))),
+    }));
+  return { versicherung: (d && d.versicherung) || {}, eintraege: sortieren(l), wartung: w };
 }
 
 // ---------- Verbindung ----------
@@ -294,6 +359,7 @@ async function api(pfad, body) {
 }
 function vorschauApi(pfad, body) {
   const d = VORSCHAU;
+  if (pfad === "/wartung") { const e = new Error("In der Vorschau lässt sich die Wartung nicht ändern."); e.status = 400; return Promise.reject(e); }
   if (pfad === "/eintrag") {
     const e = { id: Math.random().toString(16).slice(2, 10), datum: body.datum, km: body.km };
     if (body.notiz) e.notiz = body.notiz;
@@ -395,7 +461,7 @@ function berechneVersicherung() {
 function alles() {
   punkte = daten.eintraege.map(e => ({ t: tagVon(e.datum), km: e.km, e }));
   vers = berechneVersicherung();
-  zeigeZaehler(); zeichne(); zeigeVersicherung(); zeigeZeitraum(); zeigeTabelle(); hinweis();
+  zeigeZaehler(); zeichne(); zeigeVersicherung(); zeigeWartung(); zeigeZeitraum(); zeigeTabelle(); hinweis();
 }
 
 function zeigeZaehler() {
@@ -475,6 +541,251 @@ function zeigeTabelle() {
   }
   tb.innerHTML = h;
 }
+
+// ---------- Wartung ----------
+// Punkte wie Service, Ölwechsel, TÜV. Fällig ist, was zuerst kommt: km-Intervall oder Monate.
+let wOffen = null, wAendern = null, wNeu = false, wSchluessel = "", wFrisch = false;
+const monatsEnde = s => { const [y, m] = s.split("-").map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); };
+const monatJahr = s => s.slice(5, 7) + "/" + s.slice(0, 4);
+const monatName = t => { const d = new Date(Math.round(t) * 864e5); return MONATE[d.getUTCMonth()] + " " + d.getUTCFullYear(); };
+const datumW = (p, s) => p.monatsende ? monatJahr(s) : de(s);
+const bisText = (p, s) => p.monatsende ? "Ende " + monatJahr(s) : de(s);
+const zahlAus = s => { const z = String(s == null ? "" : s).replace(/\D/g, ""); return z ? parseInt(z, 10) : null; };
+
+function tempoSchaetzung() {
+  if (vers && !vers.neu && vers.tempo > 0) return { tempo: vers.tempo, text: vers.tempoText };
+  const t = punkte.length > 1 ? tempoLetztesJahr() : null;
+  return t > 0 ? { tempo: t, text: "im letzten Jahr" } : null;
+}
+function dauer(tage) {
+  if (tage < 1) return "≈ jetzt";
+  if (tage < 14) { const n = Math.round(tage); return "≈ " + n + (n === 1 ? " Tag" : " Tage"); }
+  if (tage < 61) return "≈ " + Math.round(tage / 7) + " Wochen";
+  const mon = Math.round(tage / 30.44);
+  if (mon < 12) return "≈ " + mon + " Monate";
+  const j = Math.floor(mon / 12), m = mon % 12;
+  return "≈ " + j + (j === 1 ? " Jahr" : " Jahre") + (m ? " " + m + (m === 1 ? " Monat" : " Monate") : "");
+}
+
+function berechneWartung(p, sch) {
+  const e = p.erledigt[p.erledigt.length - 1];
+  if (!e) return { p, status: "leer" };
+  const heuteT = tagVon(heute()), eT = tagVon(e.datum), L = punkte[punkte.length - 1];
+  const r = { p, e };
+  if (p.km && e.km != null) {
+    const basis = L && L.km >= e.km ? L : { t: eT, km: e.km }; // neuester bekannter Stand
+    r.zielKm = e.km + p.km;
+    r.restKm = r.zielKm - basis.km;
+    r.anteilKm = (basis.km - e.km) / p.km;
+    if (sch) r.kmT = basis.t + r.restKm / sch.tempo;
+  }
+  if (p.monate) {
+    r.zielS = p.monatsende ? monatsEnde(plusMonate(e.datum, p.monate)) : plusMonate(e.datum, p.monate);
+    r.datumT = tagVon(r.zielS);
+    r.anteilZeit = (heuteT - eT) / Math.max(1, r.datumT - eT);
+  }
+  const ziele = [r.kmT, r.datumT].filter(x => x != null);
+  r.zielT = ziele.length ? Math.min(...ziele) : null;
+  r.perKm = r.kmT != null && (r.datumT == null || r.kmT < r.datumT);
+  r.restTage = r.zielT != null ? r.zielT - heuteT : null;
+  r.anteil = Math.min(1, Math.max(0, r.anteilKm || 0, r.anteilZeit || 0));
+  r.datumDrueber = r.datumT != null && heuteT > r.datumT;
+  const drueber = (r.restKm != null && r.restKm <= 0) || r.datumDrueber;
+  r.status = drueber ? "faellig" : (r.restTage != null && r.restTage <= 30) || (r.restKm != null && r.restKm <= 1000) ? "bald" : "ok";
+  return r;
+}
+
+function punktHtml(r, sch, einstOffen) {
+  const p = r.p, offen = wOffen === p.id, info = [];
+  let zeit = "–";
+  if (r.status === "leer") info.push("noch kein Eintrag");
+  else {
+    if (r.status === "faellig") zeit = "überfällig";
+    else if (r.restTage != null) zeit = dauer(r.restTage);
+    if (r.restKm != null) info.push(r.restKm > 0 ? "noch " + zahl(r.restKm) + " km" : zahl(-r.restKm) + " km drüber");
+    else if (p.km) info.push("km vom letzten Mal fehlt");
+    if (r.status === "faellig") { if (r.datumDrueber) info.push("war fällig bis " + bisText(p, r.zielS)); }
+    else if (r.perKm) info.push("ca. " + monatName(r.zielT));
+    else if (r.zielS) info.push("bis " + bisText(p, r.zielS));
+  }
+  let h = "<div class=\"w-punkt " + r.status + (offen ? " offen" : "") + "\" data-id=\"" + esc(p.id) + "\">"
+    + "<button type=\"button\" class=\"w-zeile\" data-w=\"umschalten\" aria-expanded=\"" + offen + "\">"
+    + "<span class=\"w-name\">" + esc(p.name) + "</span><span class=\"w-zeit\">" + esc(zeit) + "</span><span class=\"w-pfeil\" aria-hidden=\"true\">›</span>"
+    + "<span class=\"w-info\">" + esc(info.join(" · ")) + "</span>"
+    + (r.status === "leer" ? "" : "<span class=\"w-balken\" aria-hidden=\"true\"><span style=\"width:" + (r.anteil * 100).toFixed(1) + "%\"></span></span>")
+    + "</button>";
+  if (offen) h += detailsHtml(r, sch, einstOffen);
+  return h + "</div>";
+}
+
+function detailsHtml(r, sch, einstOffen) {
+  const p = r.p, L = punkte[punkte.length - 1];
+  let h = "<div class=\"w-details\">";
+  if (r.e) {
+    h += "<p>Zuletzt: <b>" + datumW(p, r.e.datum) + "</b>" + (r.e.km != null ? " bei " + zahl(r.e.km) + " km" : "") + (r.e.notiz ? " · " + esc(r.e.notiz) : "") + "</p>";
+    const teile = [];
+    if (r.zielKm != null) teile.push("bei " + zahl(r.zielKm) + " km");
+    if (r.zielS) teile.push("bis " + bisText(p, r.zielS));
+    if (teile.length) h += "<p>Nächstes Mal: <b>" + teile.join("</b> oder <b>") + "</b>" + (teile.length > 1 ? ", je nachdem, was zuerst kommt" : "") + ".</p>";
+    if (r.kmT != null && r.restKm > 0) h += "<p class=\"klein\">Bei Ø " + zahl(sch.tempo) + " km pro Tag sind die " + zahl(r.zielKm) + " km etwa am " + deT(r.kmT) + " erreicht"
+      + (r.datumT != null && r.datumT < r.kmT ? ", die Zeitgrenze kommt also zuerst." : ".") + "</p>";
+  } else h += "<p>Noch kein Eintrag. Trag ein, wann es zuletzt gemacht wurde.</p>";
+
+  const ae = wAendern ? p.erledigt.find(x => x.id === wAendern) : null;
+  h += "<form class=\"w-form\" data-w=\"erledigt\" autocomplete=\"off\" novalidate>"
+    + "<p class=\"w-titel\">" + (ae ? "Eintrag vom " + datumW(p, ae.datum) + " ändern" : "Erledigt eintragen") + "</p>"
+    + "<div class=\"w-felder\">"
+    + "<label>Datum <input type=\"date\" name=\"datum\" value=\"" + (ae ? ae.datum : heute()) + "\" max=\"" + heute() + "\"></label>"
+    + "<label>km-Stand" + (p.km ? "" : " (optional)") + " <input name=\"km\" inputmode=\"numeric\" value=\"" + (ae && ae.km != null ? zahl(ae.km) : "") + "\" placeholder=\"" + (L ? "z. B. " + zahl(L.km) : "") + "\"></label>"
+    + "<label class=\"breit\">Notiz <input name=\"notiz\" maxlength=\"140\" value=\"" + esc(ae ? ae.notiz : "") + "\" placeholder=\"optional, z. B. Werkstatt\"></label>"
+    + "</div><div class=\"w-knoepfe\"><button class=\"haupt knapp\" type=\"submit\">" + (ae ? "Ändern" : "Eintragen") + "</button>"
+    + (ae ? "<button type=\"button\" class=\"zweit\" data-w=\"abbrechen\">Abbrechen</button>" : "") + "</div></form>";
+
+  if (p.erledigt.length) {
+    h += "<p class=\"w-titel\">Verlauf</p><ul class=\"w-verlauf\">";
+    for (let i = p.erledigt.length - 1; i >= 0; i--) {
+      const x = p.erledigt[i], d = datumW(p, x.datum);
+      h += "<li><span>" + d + "</span><span>" + (x.km != null ? zahl(x.km) + " km" : "") + (x.notiz ? "<small>" + esc(x.notiz) + "</small>" : "") + "</span>"
+        + "<button type=\"button\" class=\"w-mini\" data-w=\"eintrag-aendern\" data-e=\"" + esc(x.id) + "\" aria-label=\"Eintrag vom " + d + " ändern\">✎</button>"
+        + "<button type=\"button\" class=\"w-mini\" data-w=\"eintrag-loeschen\" data-e=\"" + esc(x.id) + "\" aria-label=\"Eintrag vom " + d + " löschen\">×</button></li>";
+    }
+    h += "</ul>";
+  }
+  h += "<details class=\"w-einst\"" + (einstOffen ? " open" : "") + "><summary>Intervall oder Name ändern</summary>" + punktForm(p) + "</details>";
+  return h + "</div>";
+}
+
+function punktForm(p) {
+  return "<form class=\"w-form\" data-w=\"punkt\" autocomplete=\"off\" novalidate><div class=\"w-felder\">"
+    + "<label class=\"breit\">Name <input name=\"name\" maxlength=\"40\" value=\"" + esc(p ? p.name : "") + "\" placeholder=\"z. B. Bremsflüssigkeit\"></label>"
+    + "<label>alle … km <input name=\"km\" inputmode=\"numeric\" value=\"" + (p && p.km ? zahl(p.km) : "") + "\" placeholder=\"leer = ohne\"></label>"
+    + "<label>alle … Monate <input name=\"monate\" inputmode=\"numeric\" value=\"" + (p && p.monate ? p.monate : "") + "\" placeholder=\"leer = ohne\"></label>"
+    + "<label class=\"breit haken\"><input type=\"checkbox\" name=\"monatsende\"" + (p && p.monatsende ? " checked" : "") + "> erst zum Monatsende fällig (wie beim TÜV)</label>"
+    + "</div><div class=\"w-knoepfe\"><button class=\"haupt knapp\" type=\"submit\">" + (p ? "Speichern" : "Anlegen") + "</button>"
+    + (p ? "<button type=\"button\" class=\"zweit rot\" data-w=\"punkt-loeschen\">Punkt löschen</button>" : "<button type=\"button\" class=\"zweit\" data-w=\"neu-abbrechen\">Abbrechen</button>")
+    + "</div></form>";
+}
+
+function zeigeWartung() {
+  const liste = $("w-liste");
+  // Eingaben retten, wenn nur neu gezeichnet wird (z. B. Neuladen beim Zurückwechseln in die App)
+  const schluessel = [wOffen, wAendern, wNeu].join("|"), gleich = schluessel === wSchluessel && !wFrisch, alt = {};
+  if (gleich) liste.querySelectorAll("form[data-w] [name]").forEach(el => { alt[el.form.dataset.w + ":" + el.name] = el.type === "checkbox" ? el.checked : el.value; });
+  const einstOffen = gleich && !!liste.querySelector("details.w-einst[open]");
+  wSchluessel = schluessel; wFrisch = false;
+
+  const sch = tempoSchaetzung(), rs = (daten.wartung || []).map(p => berechneWartung(p, sch));
+  let h = rs.length ? rs.map(r => punktHtml(r, sch, einstOffen)).join("") : "<p class=\"klein\">Noch keine Wartungspunkte.</p>";
+  h += wNeu ? "<div class=\"w-neu\"><p class=\"w-titel\">Neuer Wartungspunkt</p>" + punktForm(null) + "</div>"
+    : "<button type=\"button\" class=\"w-plus\" data-w=\"neu\">+ Wartungspunkt hinzufügen</button>";
+  liste.innerHTML = h;
+  liste.querySelectorAll("form[data-w] [name]").forEach(el => {
+    const k = el.form.dataset.w + ":" + el.name;
+    if (k in alt) { if (el.type === "checkbox") el.checked = alt[k]; else el.value = alt[k]; }
+  });
+
+  const faellig = rs.filter(r => r.status === "faellig"), bald = rs.filter(r => r.status === "bald"), ok = rs.some(r => r.status === "ok");
+  const st = $("w-status");
+  st.className = "w-status " + (faellig.length ? "faellig" : bald.length ? "bald" : ok ? "ok" : "");
+  st.textContent = faellig.length ? faellig.length + " überfällig" : bald.length ? bald.length + " bald fällig" : ok ? "alles im grünen Bereich" : "";
+  $("w-fuss").textContent = sch && rs.some(r => r.kmT != null) ? "Zeit geschätzt mit Ø " + zahl(sch.tempo) + " km pro Tag " + sch.text + "." : "";
+
+  // Hinweis oben beim Zählerstand, sobald etwas bald oder überfällig ist
+  const wichtig = faellig[0] || bald[0], hw = $("w-hinweis"), anzahl = faellig.length + bald.length;
+  hw.hidden = !wichtig;
+  if (wichtig) {
+    hw.className = "w-hinweis" + (faellig.length ? " faellig" : "");
+    hw.dataset.id = wichtig.p.id;
+    hw.textContent = "Wartung: " + wichtig.p.name + (wichtig.status === "faellig" ? " überfällig"
+      : wichtig.restTage != null && wichtig.restTage >= 1 ? " fällig in " + dauer(wichtig.restTage) : " bald fällig") + (anzahl > 1 ? " (+" + (anzahl - 1) + ")" : "");
+  }
+}
+
+function kmPruefen(km, datum) {
+  const vor = vorgaenger(datum), nach = daten.eintraege.find(e => e.datum > datum);
+  if (vor && km < vor.km) return "Der km-Stand ist kleiner als die Ablesung vom " + de(vor.datum) + " (" + zahl(vor.km) + " km).";
+  if (nach && km > nach.km) return "Der km-Stand ist größer als die Ablesung vom " + de(nach.datum) + " (" + zahl(nach.km) + " km).";
+  if (vor && (km - vor.km) / Math.max(1, tagVon(datum) - tagVon(vor.datum)) > 1500) return "Das wären " + zahl(km - vor.km) + " km seit der Ablesung vom " + de(vor.datum) + ". Vertippt?";
+  return null;
+}
+
+async function wSpeichern(body, text, knopf, danach, knopfText) {
+  setzeBeschaeftigt(true, knopfText || "Speichere …", knopf);
+  try {
+    const d = await api("/wartung", body);
+    if (danach) danach(d);
+    wFrisch = true;
+    uebernehmen(d);
+    geladenUm = Date.now();
+    meldung(text);
+    if (!VORSCHAU) sync("Stand von GitHub, gespeichert um " + uhr() + " Uhr");
+  } catch (e) {
+    meldung(fehlerText(e, "Nichts gespeichert."), "fehler");
+  } finally { setzeBeschaeftigt(false, null, knopf); }
+}
+
+$("w-liste").addEventListener("click", ev => {
+  const b = ev.target.closest("button[data-w]");
+  if (!b) return;
+  const w = b.dataset.w, box = b.closest(".w-punkt"), id = box ? box.dataset.id : null;
+  const p = id ? daten.wartung.find(x => x.id === id) : null;
+  if (w === "umschalten") { wOffen = wOffen === id ? null : id; wAendern = null; wNeu = false; zeigeWartung(); return; }
+  if (w === "neu") { wNeu = true; wOffen = null; wAendern = null; zeigeWartung(); const f = $("w-liste").querySelector(".w-neu input[name=name]"); if (f) f.focus(); return; }
+  if (w === "neu-abbrechen") { wNeu = false; zeigeWartung(); return; }
+  if (w === "abbrechen") { wAendern = null; wFrisch = true; zeigeWartung(); return; }
+  if (w === "eintrag-aendern") {
+    wAendern = b.dataset.e; zeigeWartung();
+    const f = $("w-liste").querySelector(".offen form[data-w=erledigt]");
+    if (f) f.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if (!p || beschaeftigt) return;
+  if (w === "eintrag-loeschen") {
+    const x = p.erledigt.find(e => e.id === b.dataset.e);
+    if (!x || !confirm(p.name + " vom " + datumW(p, x.datum) + (x.km != null ? " (" + zahl(x.km) + " km)" : "") + " löschen?")) return;
+    wSpeichern({ aktion: "erledigt-loeschen", punkt: p.id, id: x.id }, "Gelöscht: " + p.name + " vom " + datumW(p, x.datum) + ".", b, () => { if (wAendern === x.id) wAendern = null; }, "…");
+  } else if (w === "punkt-loeschen") {
+    if (!confirm("Wartungspunkt „" + p.name + "“ mit allen Einträgen löschen?")) return;
+    wSpeichern({ aktion: "punkt-loeschen", id: p.id }, "Gelöscht: " + p.name + ".", b, () => { wOffen = null; wAendern = null; }, "Lösche …");
+  }
+});
+
+$("w-liste").addEventListener("submit", ev => {
+  ev.preventDefault();
+  if (beschaeftigt) return;
+  const f = ev.target, el = f.elements, knopf = f.querySelector("button[type=submit]");
+  const box = f.closest(".w-punkt"), p = box ? daten.wartung.find(x => x.id === box.dataset.id) : null;
+  if (f.dataset.w === "erledigt" && p) {
+    const datum = el.datum.value || heute(), km = zahlAus(el.km.value), notiz = el.notiz.value.trim();
+    if (datum > heute()) { meldung("Das Datum liegt in der Zukunft.", "fehler"); return; }
+    if (p.km && km == null) { meldung("Bitte den km-Stand eintragen.", "fehler"); el.km.focus(); return; }
+    const warnung = km != null ? kmPruefen(km, datum) : null;
+    if (warnung && !confirm(warnung + "\n\nTrotzdem speichern?")) return;
+    const aendern = !!wAendern && p.erledigt.some(x => x.id === wAendern);
+    const body = { aktion: "erledigt", punkt: p.id, datum, km, notiz };
+    if (aendern) body.id = wAendern;
+    wSpeichern(body, (aendern ? "Geändert: " : "Eingetragen: ") + p.name + " am " + datumW(p, datum) + (km != null ? " bei " + zahl(km) + " km" : "") + ".", knopf, () => { wAendern = null; });
+  } else if (f.dataset.w === "punkt") {
+    const name = el.name.value.trim(), km = zahlAus(el.km.value), monate = zahlAus(el.monate.value), monatsende = el.monatsende.checked;
+    if (!name) { meldung("Bitte einen Namen eingeben.", "fehler"); el.name.focus(); return; }
+    if (km == null && monate == null) { meldung("Bitte ein Intervall in km oder Monaten angeben.", "fehler"); el.km.focus(); return; }
+    const body = { aktion: "punkt", name, km, monate, monatsende };
+    if (p) body.id = p.id;
+    const vorher = new Set(daten.wartung.map(x => x.id));
+    wSpeichern(body, (p ? "Gespeichert: " : "Angelegt: ") + name + ".", knopf, d => {
+      if (p) return;
+      wNeu = false;
+      const neu = (d && Array.isArray(d.wartung) ? d.wartung : []).find(x => !vorher.has(String(x.id)));
+      wOffen = neu ? String(neu.id) : null;
+    });
+  }
+});
+
+$("w-hinweis").addEventListener("click", () => {
+  const id = $("w-hinweis").dataset.id;
+  if (id) { wOffen = id; wAendern = null; wNeu = false; zeigeWartung(); }
+  $("wartung").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 
 // ---------- Grafik ----------
 let ziele = [], breite = 0;
@@ -602,10 +913,12 @@ function pruefen(km, datum) {
   if (vor && (km - vor.km) / Math.max(1, tagVon(datum) - tagVon(vor.datum)) > 1500) return "Das wären " + zahl(km - vor.km) + " km seit " + de(vor.datum) + ". Vertippt?";
   return null;
 }
-function setzeBeschaeftigt(an, text) {
+function setzeBeschaeftigt(an, text, knopf) {
   beschaeftigt = an;
-  $("speichern").disabled = an;
-  $("speichern").textContent = an ? (text || "Speichere …") : "Speichern";
+  const k = knopf || $("speichern");
+  if (an) { k.dataset.vorher = k.textContent; k.textContent = text || "Speichere …"; }
+  else if (k.dataset.vorher != null) { k.textContent = k.dataset.vorher; delete k.dataset.vorher; }
+  k.disabled = an;
 }
 
 $("formular").addEventListener("submit", async ev => {
