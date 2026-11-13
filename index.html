@@ -321,6 +321,14 @@ function codeAus(text) {
 }
 code = codeAus(location.hash.slice(1));
 if (code) merken(S_CODE, code); else code = lesen(S_CODE);
+// Code immer in der Adresse halten, damit Lesezeichen und Home-Bildschirm-Symbole ihn mitnehmen
+function codeInAdresse() {
+  try {
+    const ziel = code ? "#k=" + code : "";
+    if (location.hash !== ziel) history.replaceState(null, "", location.pathname + location.search + ziel);
+  } catch (e) {}
+}
+codeInAdresse();
 
 let daten = { versicherung: {}, eintraege: [], wartung: [] }, punkte = [], vers = null;
 let beschaeftigt = false, geladenUm = 0;
@@ -394,7 +402,10 @@ async function laden() {
     zeigeZugang(false);
     sync("Stand von GitHub, geladen um " + uhr() + " Uhr");
   } catch (e) {
-    if (e.status === 401) { zeigeZugang(true, "Der Zugangscode auf diesem Handy stimmt nicht. Öffne den Link nochmal oder füge ihn hier ein."); sync(""); return; }
+    if (e.status === 401) {
+      code = null; merken(S_CODE, null); codeInAdresse();
+      zeigeZugang(true, "Der Zugangscode stimmt nicht. Öffne den Link nochmal oder füge ihn hier ein."); sync(""); return;
+    }
     sync(daten.eintraege.length ? "Keine Verbindung, zeigt den zuletzt geladenen Stand" : "Keine Verbindung zum Speicher");
     if (e.status) meldung(e.message, "fehler");
   }
@@ -970,7 +981,7 @@ $("zugang-form").addEventListener("submit", ev => {
   ev.preventDefault();
   const c = codeAus($("zugang-code").value.trim()) || codeAus("k=" + $("zugang-code").value.trim());
   if (!c) { meldung("Das sieht nicht nach einem Zugangscode aus.", "fehler"); return; }
-  code = c; merken(S_CODE, c); $("zugang-code").value = "";
+  code = c; merken(S_CODE, c); codeInAdresse(); $("zugang-code").value = "";
   laden();
 });
 $("zugang-zeigen").addEventListener("click", () => { zeigeZugang(true, "Hier kannst du den Link oder Code neu eintragen."); $("zugang").scrollIntoView({ behavior: "smooth" }); });
