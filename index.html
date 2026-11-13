@@ -156,6 +156,10 @@ p{margin:0}
 .w-verlauf li:last-child{border-bottom:0}
 .w-verlauf small{display:block;font-size:13px;color:var(--leise);line-height:1.3}
 .w-mini{border:0;background:none;color:var(--leise);font-size:19px;line-height:1;width:34px;height:34px;border-radius:6px;cursor:pointer}
+.w-link{border:0;background:none;color:var(--blau);font:600 14.5px "Barlow",system-ui,sans-serif;padding:8px 4px;cursor:pointer}
+.w-details>p .w-link{padding:0 0 0 4px}
+.w-form.w-aendern{background:var(--blau-flaeche);border-radius:10px;padding:2px 10px 12px;margin:12px -10px 0}
+.w-form.w-aendern input:not([type=checkbox]){background:var(--flaeche)}
 .w-einst{margin-top:14px}
 .w-einst summary{color:var(--blau);font-size:14.5px;cursor:pointer;padding:4px 0}
 .w-plus{border:0;background:none;color:var(--blau);font-size:15px;font-weight:600;padding:12px 0 2px;cursor:pointer}
@@ -556,6 +560,8 @@ function zeigeTabelle() {
 // ---------- Wartung ----------
 // Punkte wie Service, Ölwechsel, TÜV. Fällig ist, was zuerst kommt: km-Intervall oder Monate.
 let wOffen = null, wAendern = null, wNeu = false, wSchluessel = "", wFrisch = false;
+// Monatsauswahl für Punkte „bis Monatsende“ (TÜV), sonst normales Datumsfeld
+const MONAT_OK = (() => { const i = document.createElement("input"); i.setAttribute("type", "month"); return i.type === "month"; })();
 const monatsEnde = s => { const [y, m] = s.split("-").map(Number); return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10); };
 const monatJahr = s => s.slice(5, 7) + "/" + s.slice(0, 4);
 const monatName = t => { const d = new Date(Math.round(t) * 864e5); return MONATE[d.getUTCMonth()] + " " + d.getUTCFullYear(); };
@@ -633,7 +639,8 @@ function detailsHtml(r, sch, einstOffen) {
   const p = r.p, L = punkte[punkte.length - 1];
   let h = "<div class=\"w-details\">";
   if (r.e) {
-    h += "<p>Zuletzt: <b>" + datumW(p, r.e.datum) + "</b>" + (r.e.km != null ? " bei " + zahl(r.e.km) + " km" : "") + (r.e.notiz ? " · " + esc(r.e.notiz) : "") + "</p>";
+    h += "<p>Zuletzt: <b>" + datumW(p, r.e.datum) + "</b>" + (r.e.km != null ? " bei " + zahl(r.e.km) + " km" : "") + (r.e.notiz ? " · " + esc(r.e.notiz) : "")
+      + " <button type=\"button\" class=\"w-link\" data-w=\"eintrag-aendern\" data-e=\"" + esc(r.e.id) + "\">ändern</button></p>";
     const teile = [];
     if (r.zielKm != null) teile.push("bei " + zahl(r.zielKm) + " km");
     if (r.zielS) teile.push("bis " + bisText(p, r.zielS));
@@ -643,13 +650,15 @@ function detailsHtml(r, sch, einstOffen) {
   } else h += "<p>Noch kein Eintrag. Trag ein, wann es zuletzt gemacht wurde.</p>";
 
   const ae = wAendern ? p.erledigt.find(x => x.id === wAendern) : null;
-  h += "<form class=\"w-form\" data-w=\"erledigt\" autocomplete=\"off\" novalidate>"
+  const monat = p.monatsende && MONAT_OK, dWert = ae ? ae.datum : heute();
+  h += "<form class=\"w-form" + (ae ? " w-aendern" : "") + "\" data-w=\"erledigt\" autocomplete=\"off\" novalidate>"
     + "<p class=\"w-titel\">" + (ae ? "Eintrag vom " + datumW(p, ae.datum) + " ändern" : "Erledigt eintragen") + "</p>"
     + "<div class=\"w-felder\">"
-    + "<label>Datum <input type=\"date\" name=\"datum\" value=\"" + (ae ? ae.datum : heute()) + "\" max=\"" + heute() + "\"></label>"
+    + (monat ? "<label>Monat <input type=\"month\" name=\"datum\" value=\"" + dWert.slice(0, 7) + "\" max=\"" + heute().slice(0, 7) + "\"></label>"
+      : "<label>Datum <input type=\"date\" name=\"datum\" value=\"" + dWert + "\" max=\"" + heute() + "\"></label>")
     + "<label>km-Stand" + (p.km ? "" : " (optional)") + " <input name=\"km\" inputmode=\"numeric\" value=\"" + (ae && ae.km != null ? zahl(ae.km) : "") + "\" placeholder=\"" + (L ? "z. B. " + zahl(L.km) : "") + "\"></label>"
     + "<label class=\"breit\">Notiz <input name=\"notiz\" maxlength=\"140\" value=\"" + esc(ae ? ae.notiz : "") + "\" placeholder=\"optional, z. B. Werkstatt\"></label>"
-    + "</div><div class=\"w-knoepfe\"><button class=\"haupt knapp\" type=\"submit\">" + (ae ? "Ändern" : "Eintragen") + "</button>"
+    + "</div><div class=\"w-knoepfe\"><button class=\"haupt knapp\" type=\"submit\">" + (ae ? "Speichern" : "Eintragen") + "</button>"
     + (ae ? "<button type=\"button\" class=\"zweit\" data-w=\"abbrechen\">Abbrechen</button>" : "") + "</div></form>";
 
   if (p.erledigt.length) {
@@ -657,7 +666,7 @@ function detailsHtml(r, sch, einstOffen) {
     for (let i = p.erledigt.length - 1; i >= 0; i--) {
       const x = p.erledigt[i], d = datumW(p, x.datum);
       h += "<li><span>" + d + "</span><span>" + (x.km != null ? zahl(x.km) + " km" : "") + (x.notiz ? "<small>" + esc(x.notiz) + "</small>" : "") + "</span>"
-        + "<button type=\"button\" class=\"w-mini\" data-w=\"eintrag-aendern\" data-e=\"" + esc(x.id) + "\" aria-label=\"Eintrag vom " + d + " ändern\">✎</button>"
+        + "<button type=\"button\" class=\"w-link\" data-w=\"eintrag-aendern\" data-e=\"" + esc(x.id) + "\" aria-label=\"Eintrag vom " + d + " ändern\">ändern</button>"
         + "<button type=\"button\" class=\"w-mini\" data-w=\"eintrag-loeschen\" data-e=\"" + esc(x.id) + "\" aria-label=\"Eintrag vom " + d + " löschen\">×</button></li>";
     }
     h += "</ul>";
@@ -767,7 +776,10 @@ $("w-liste").addEventListener("submit", ev => {
   const f = ev.target, el = f.elements, knopf = f.querySelector("button[type=submit]");
   const box = f.closest(".w-punkt"), p = box ? daten.wartung.find(x => x.id === box.dataset.id) : null;
   if (f.dataset.w === "erledigt" && p) {
-    const datum = el.datum.value || heute(), km = zahlAus(el.km.value), notiz = el.notiz.value.trim();
+    let datum = el.datum.value || heute();
+    if (/^\d{4}-\d{2}$/.test(datum)) datum += "-01"; // Monatsfeld (TÜV)
+    const km = zahlAus(el.km.value), notiz = el.notiz.value.trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) { meldung("Bitte ein gültiges Datum eingeben.", "fehler"); el.datum.focus(); return; }
     if (datum > heute()) { meldung("Das Datum liegt in der Zukunft.", "fehler"); return; }
     if (p.km && km == null) { meldung("Bitte den km-Stand eintragen.", "fehler"); el.km.focus(); return; }
     const warnung = km != null ? kmPruefen(km, datum) : null;
