@@ -3,6 +3,7 @@
 Ziel: `https://kilometerstand-passat.fbw159.workers.dev` liest und schreibt `daten.json` im privaten Repo `fbw159/kilometerstand-passat-daten`. Die Seite https://fbw159.github.io/kilometerstand-passat/ ruft ihn mit dem Zugangscode im Header `X-Zugang` auf. Im Code steht nur der SHA-256 des Codes, den Link mit Code hat Börje.
 
 **Stand 06.11.2026: eingerichtet.** Worker hochgeladen, workers.dev an, Secret `GITHUB_TOKEN` gesetzt, `/status` liefert `github_status: 200`, Speichern und Löschen getestet.
+**13.11.2026:** Endpunkt `/wartung` (Service, Ölwechsel, TÜV usw.) ergänzt und den Worker neu hochgeladen (nur Schritte 2 und 3).
 
 Vorgehen wie beim Worker `schiffe-flugzeuge` (siehe Projekt-Doc `claude/github-veroeffentlichung.md` im Claude-Projekt „Dashboards“, Abschnitt Cloudflare):
 
