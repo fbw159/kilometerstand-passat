@@ -453,6 +453,20 @@ function tempoLetztesJahr() {
   const L = punkte[punkte.length - 1], von = Math.max(punkte[0].t, L.t - 365);
   return L.t - von >= 1 ? (L.km - kmAm(von).km) / (L.t - von) : null;
 }
+// Tempo für die Prognose: Ø der letzten 4 Wochen, damit geändertes Fahren (z. B. Pendeln) gleich durchschlägt.
+// Nur wenn höchstens 14 Tage vor dem Fensteranfang eine Ablesung liegt (sonst ist der Stand dort zu grob geschätzt);
+// dann ersatzweise 8 Wochen oder 3 Monate, sonst null (→ Schnitt seit Beginn des Versicherungsjahres).
+const FENSTER = [[28, "in den letzten 4 Wochen"], [56, "in den letzten 8 Wochen"], [91, "in den letzten 3 Monaten"]];
+function tempoZuletzt() {
+  const L = punkte[punkte.length - 1];
+  for (const [tage, text] of FENSTER) {
+    const von = L.t - tage;
+    if (von < punkte[0].t) return null;
+    const vor = punkte.filter(q => q.t <= von).pop();
+    if (vor && von - vor.t <= 14) return { tempo: (L.km - kmAm(von).km) / tage, text };
+  }
+  return null;
+}
 function berechneVersicherung() {
   if (!punkte.length) return null;
   const v = daten.versicherung || {};
@@ -467,9 +481,12 @@ function berechneVersicherung() {
   if (startT > L.t) return { neu: true, proJahr, startS, startT, endeT }; // neues Versicherungsjahr, noch ohne Ablesung
   const kmStart = kmAm(startT).km;
 
-  let tempo, tempoText;
+  let tempo, tempoText, schnitt = null, schnittText = "";
   const basisT = Math.max(startT, punkte[0].t);
-  if (L.t - basisT >= 14) { tempo = (L.km - kmStart) / (L.t - basisT); tempoText = "seit " + deT(basisT); }
+  if (L.t - basisT >= 14) { schnitt = (L.km - kmStart) / (L.t - basisT); schnittText = "seit " + deT(basisT); }
+  const zuletzt = tempoZuletzt();
+  if (zuletzt) { tempo = zuletzt.tempo; tempoText = zuletzt.text; }
+  else if (schnitt != null) { tempo = schnitt; tempoText = schnittText; }
   else { tempo = tempoLetztesJahr(); tempoText = "im letzten Jahr"; }
 
   const gefahren = Math.max(0, L.km - kmStart);
@@ -479,7 +496,7 @@ function berechneVersicherung() {
   const prognose = ok ? L.km + tempo * (endeT - L.t) - kmStart : null;
   const tageRest = endeT - L.t;
   return {
-    proJahr, startS, startT, endeT, kmStart, gefahren, grenzeKm, rest, tempo, tempoText, grenzeT, prognose, L,
+    proJahr, startS, startT, endeT, kmStart, gefahren, grenzeKm, rest, tempo, tempoText, schnitt, schnittText, grenzeT, prognose, L,
     prognoseEndeKm: ok ? kmStart + prognose : null,
     maxProTag: rest > 0 && tageRest > 0 ? rest / tageRest : null,
     status: rest <= 0 ? "drueber" : (grenzeT != null && grenzeT < endeT ? "rot" : "gruen"),
@@ -535,7 +552,8 @@ function zeigeVersicherung() {
   } else if (v.prognose != null) {
     h += "<p class=\"gut\">Passt: hochgerechnet ≈ " + zahl(rund(v.prognose, 100)) + " km bis " + bis + ".</p>";
   }
-  if (v.tempo != null && v.status !== "drueber") h += "<p class=\"klein\">Prognose aus Ø " + zahl(v.tempo) + " km pro Tag " + v.tempoText + ".</p>";
+  if (v.tempo != null && v.status !== "drueber") h += "<p class=\"klein\">Prognose aus Ø " + zahl(v.tempo) + " km pro Tag " + v.tempoText
+    + (v.schnitt != null && v.tempoText !== v.schnittText ? " (" + v.schnittText + ": Ø " + zahl(v.schnitt) + " km pro Tag)" : "") + ".</p>";
   $("vers-inhalt").innerHTML = h;
 }
 
