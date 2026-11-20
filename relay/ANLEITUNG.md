@@ -4,6 +4,7 @@ Ziel: `https://kilometerstand-passat.fbw159.workers.dev` liest und schreibt `dat
 
 **Stand 06.11.2026: eingerichtet.** Worker hochgeladen, workers.dev an, Secret `GITHUB_TOKEN` gesetzt, `/status` liefert `github_status: 200`, Speichern und Löschen getestet.
 **13.11.2026:** Endpunkt `/wartung` (Service, Ölwechsel, TÜV usw.) ergänzt und den Worker neu hochgeladen (nur Schritte 2 und 3).
+**20.11.2026:** Endpunkt `/versicherung` (km pro Jahr, Beginn) ergänzt und neu hochgeladen.
 
 Vorgehen wie beim Worker `schiffe-flugzeuge` (siehe Projekt-Doc `claude/github-veroeffentlichung.md` im Claude-Projekt „Dashboards“, Abschnitt Cloudflare):
 

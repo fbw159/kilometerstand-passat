@@ -1,6 +1,6 @@
 // Cloudflare Worker „kilometerstand-passat“ – Speicher für https://fbw159.github.io/kilometerstand-passat/
 // Liest und schreibt daten.json im privaten Repo fbw159/kilometerstand-passat-daten.
-// Jede Eingabe und jedes Löschen wird dort ein eigener Commit (Ablesungen und Wartung).
+// Jede Eingabe und jedes Löschen wird dort ein eigener Commit (Ablesungen, Wartung, Versicherung).
 //
 // Secret GITHUB_TOKEN: GitHub-Token mit Schreibrecht „Contents“ auf das Daten-Repo.
 // Zugang: Die Seite schickt den Zugangscode im Header X-Zugang. Hier steht nur sein SHA-256.
@@ -45,7 +45,7 @@ export default {
 
       if (request.method === "GET" && pfad === "/daten") return antwort(200, (await lesen(env)).daten);
 
-      if (request.method === "POST" && (pfad === "/eintrag" || pfad === "/loeschen" || pfad === "/wartung")) {
+      if (request.method === "POST" && ["/eintrag", "/loeschen", "/wartung", "/versicherung"].includes(pfad)) {
         const text = await request.text();
         if (text.length > 4000) return antwort(413, { fehler: "Anfrage zu groß." });
         let body;
@@ -53,6 +53,7 @@ export default {
         if (!body || typeof body !== "object" || Array.isArray(body)) return antwort(400, { fehler: "Ungültige Anfrage." });
 
         if (pfad === "/wartung") return antwort(200, await aendern(env, d => wartungAendern(d, body)));
+        if (pfad === "/versicherung") return antwort(200, await aendern(env, d => versicherungAendern(d, body)));
         if (pfad === "/eintrag") {
           const e = neuerEintrag(body);
           return antwort(200, await aendern(env, d => {
@@ -126,6 +127,21 @@ function neuerEintrag(b) {
   const e = { id: neueId(), datum, km };
   if (notiz) e.notiz = notiz;
   return e;
+}
+
+// ---------- Versicherung ----------
+// Versicherte km pro Jahr und Beginn des Versicherungsjahres (läuft jeweils 12 Monate ab dem Beginn).
+function versicherungAendern(d, b) {
+  const km = ganzzahl(b.km_pro_jahr, 1000, 200000, "Der Wert für km pro Jahr");
+  if (km == null) throw new Fehler(400, "Bitte die versicherten km pro Jahr eintragen.");
+  const beginn = pruefeDatum(b.beginn);
+  const alt = d.versicherung || {};
+  if (alt.km_pro_jahr === km && alt.beginn === beginn) return null; // nichts geändert
+  d.versicherung = { ...alt, km_pro_jahr: km, beginn };
+  const vorher = [];
+  if (alt.km_pro_jahr && alt.km_pro_jahr !== km) vorher.push(`${zahl(alt.km_pro_jahr)} km`);
+  if (alt.beginn && alt.beginn !== beginn) vorher.push(`Beginn ${de(alt.beginn)}`);
+  return `Versicherung: ${zahl(km)} km pro Jahr, Beginn ${de(beginn)}` + (vorher.length ? ` (vorher ${vorher.join(", ")})` : "");
 }
 
 // ---------- Wartung ----------
